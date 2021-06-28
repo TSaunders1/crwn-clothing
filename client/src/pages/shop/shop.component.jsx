@@ -1,13 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/prop-types */
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import CollectionsOverviewContainer from '../../Components/collections-overview/collections-overview.container';
-import CollectionPageContainer from '../collection/collection.container';
+import Spinner from '../../Components/spinner/spinner.component';
 
 import { fetchCollectionsStart } from '../../redux/actions/shop.actions';
+
+const CollectionsOverviewContainer = lazy(() => import('../../Components/collections-overview/collections-overview.container'));
+const CollectionPageContainer = lazy(() => import('../collection/collection.container'));
 
 const ShopPage = ({ dispatchFetchCollectionsStart, match }) => {
   useEffect(() => {
@@ -16,8 +18,10 @@ const ShopPage = ({ dispatchFetchCollectionsStart, match }) => {
 
   return (
     <div className="shop-page">
-      <Route exact path={`${match.path}`} component={CollectionsOverviewContainer} />
-      <Route path={`${match.path}/:collectionId`} component={CollectionPageContainer} />
+      <Suspense fallback={<Spinner />}>
+        <Route exact path={`${match.path}`} component={CollectionsOverviewContainer} />
+        <Route path={`${match.path}/:collectionId`} component={CollectionPageContainer} />
+      </Suspense>
     </div>
   );
 };
